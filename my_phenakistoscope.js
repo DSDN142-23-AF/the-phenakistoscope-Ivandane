@@ -3,8 +3,9 @@ const SLICE_COUNT = 12;
 
 // SETUP PSCOPE FUNCTION
 function setup_pScope(pScope){
-  //pScope.output_mode(ANIMATED_FRAME);
-  pScope.output_mode(ANIMATED_DISK);
+  // pScope.output_mode(ANIMATED_FRAME);
+  pScope.output_mode(STATIC_DISK);
+  // pScope.output_mode(ANIMATED_DISK);
   pScope.scale_for_screen(true);
   pScope.draw_layer_boundaries(false); // Set to false before hand-in
   pScope.set_direction(CCW);
@@ -18,7 +19,7 @@ function setup_pScope(pScope){
 
 function setup_layers(pScope){
   // Draw Circle Background
-  new PLayer(null, 170);
+  new PLayer(null, 15, 10, 60);
 
   // Ice Cube Layer
   let iceCubeLayer = new PLayer(iceCube);
@@ -30,15 +31,15 @@ function setup_layers(pScope){
   wavesLayer.mode(RING);
   wavesLayer.set_boundary(0, 850);
 
-  // Inner Circle Layer
-  let innerCircleLayer = new PLayer(innerCircle);
-  innerCircleLayer.mode(RING);
-  innerCircleLayer.set_boundary(0, 380);
+  // Planet Layer
+  let planetLayer = new PLayer(planet);
+  planetLayer.mode(RING);
+  planetLayer.set_boundary(0, 380);
 
   // Pearl Layer
   let pearlLayer = new PLayer(pearl);
   pearlLayer.mode(SWIRL(1));
-  pearlLayer.set_boundary(0, 550);
+  pearlLayer.set_boundary(0, 500);
 
   // Bubble Tea Layer
   let bubbleTeaLayer = new PLayer(bubbleTea);
@@ -75,7 +76,8 @@ function waves(x, y, animation, pScope) {
   push();
     let radius = 15;
     let offset = 850;
-    fill(255);
+    noStroke();
+    fill(140, 210, 235);
     
     if (animation.frame == 0) {
       beginShape();
@@ -89,9 +91,9 @@ function waves(x, y, animation, pScope) {
   pop();
 }
 
-// INNER CIRCLE FUNCTION
-function innerCircle(x, y, animation, pScope) {
-  pScope.fill_background(3, 186, 252);
+// PLANET FUNCTION
+function planet(x, y, animation, pScope) {
+  pScope.fill_background(105, 0, 190);
 }
 
 // PEARL FUNCTION
