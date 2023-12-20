@@ -11,7 +11,7 @@ function setup_pScope(pScope){
   pScope.set_slice_count(SLICE_COUNT);
 
   // Load Image
-  pScope.load_image('bubble-tea', 'png');
+  pScope.load_image_sequence('bubble-tea', 'png', 24);
   pScope.load_image('pearl', 'png');
   pScope.load_image('ice-cube', 'png');
 }
@@ -33,12 +33,12 @@ function setup_layers(pScope){
   // Inner Circle Layer
   let innerCircleLayer = new PLayer(innerCircle);
   innerCircleLayer.mode(RING);
-  innerCircleLayer.set_boundary(0, 400);
+  innerCircleLayer.set_boundary(0, 380);
 
   // Pearl Layer
   let pearlLayer = new PLayer(pearl);
   pearlLayer.mode(SWIRL(1));
-  pearlLayer.set_boundary(0, 400);
+  pearlLayer.set_boundary(0, 550);
 
   // Bubble Tea Layer
   let bubbleTeaLayer = new PLayer(bubbleTea);
@@ -106,9 +106,9 @@ function pearl(x, y, animation, pScope) {
 // BUBBLE TEA FUNCTION
 function bubbleTea(x, y, animation, pScope) {
   push();
-    translate(0, -400);
-    scale(1.25);
-    pScope.draw_image('bubble-tea', x, y - (animation.wave(0.5) * 150));
+    translate(0, -500);
+    scale(0.6);
+    pScope.draw_image_from_sequence('bubble-tea', x, y - map(animation.wave(1), 0, 1, 0, 200), animation.frame);
   pop();
 }
 
