@@ -2,24 +2,25 @@
 const SLICE_COUNT = 12;
 
 // SETUP PSCOPE FUNCTION
-function setup_pScope(pScope){
+function setup_pScope(pScope) {
+  // pScope.output_mode(OUTPUT_GIF(1000));
   // pScope.output_mode(ANIMATED_FRAME);
-  pScope.output_mode(STATIC_DISK);
-  // pScope.output_mode(ANIMATED_DISK);
+  // pScope.output_mode(STATIC_DISK);
+  pScope.output_mode(ANIMATED_DISK);
   pScope.scale_for_screen(true);
-  pScope.draw_layer_boundaries(false); // Set to false before hand-in
-  pScope.set_direction(CCW);
+  pScope.draw_layer_boundaries(false);
+  pScope.set_direction(CCW); // Counter-clockwise
   pScope.set_slice_count(SLICE_COUNT);
 
-  // Load Image
+  // Load images and image sequences
   pScope.load_image_sequence('bubble-tea', 'png', 24);
   pScope.load_image('pearl', 'png');
   pScope.load_image('ice-cube', 'png');
 }
 
-function setup_layers(pScope){
-  // Draw Circle Background
-  new PLayer(null, 15, 10, 60);
+function setup_layers(pScope) {
+  // Circle Background
+  new PLayer(null, 115, 120, 180); // Light purple
 
   // Ice Cube Layer
   let iceCubeLayer = new PLayer(iceCube);
@@ -29,7 +30,7 @@ function setup_layers(pScope){
   // Waves Layer
   let wavesLayer = new PLayer(waves);
   wavesLayer.mode(RING);
-  wavesLayer.set_boundary(0, 850);
+  wavesLayer.set_boundary(0, 800);
 
   // Planet Layer
   let planetLayer = new PLayer(planet);
@@ -50,22 +51,42 @@ function setup_layers(pScope){
 // ICE CUBE FUNCTION
 function iceCube(x, y, animation, pScope) {
   push();
-    translate(0, -880);
-    scale(0.25);
+    // Declare variables
+    let leftIceCubeY = map(animation.wave(1), 0, 1, 0, 100);
+    let centerIceCubeY = map(animation.wave(1), 0, 1, 0, 50);
+    let rightIceCubeY = map(animation.wave(1), 0, 1, 100, 0);
+
+    // Declare styles
+    translate(0, -820);
+    scale(0.2);
+
+    // Left ice cube
     push();
-      translate(-500, 100 * animation.wave(1));
-      rotate(map(animation.wave(1), 0, 1, -5, 5));
+      // Declare styles
+      translate(-650, leftIceCubeY + 50);
+      rotate(map(animation.wave(1), 0, 1, -5, 5)); // Rotate between -5 and 5 degrees
+      
+      // Draw image
       pScope.draw_image('ice-cube', 0, 0);
     pop();
     
+    // Center ice cube
     push();
-      translate(0, 50 * animation.wave(1));
+      // Declare styles
+      translate(0, centerIceCubeY);
+      rotate(map(animation.wave(1), 0, 1, -2.5, 2.5)); // Rotate between -2.5 and 2.5 degrees
+      
+      // Draw image
       pScope.draw_image('ice-cube', 0, 0);
     pop();
 
+    // Right ice cube
     push();
-      translate(500, 100 * animation.wave(-1));
-      rotate(map(animation.wave(1), 0, 1, 5, -5));
+      // Declare styles
+      translate(650, rightIceCubeY + 50);
+      rotate(map(animation.wave(1), 0, 1, 5, -5)); // Rotate between -5 and 5 degrees
+      
+      // Draw image
       pScope.draw_image('ice-cube', 0, 0);
     pop();
   pop();
@@ -74,13 +95,20 @@ function iceCube(x, y, animation, pScope) {
 // WAVES FUNCTION
 function waves(x, y, animation, pScope) {
   push();
+    // Declare variables
     let radius = 15;
-    let offset = 850;
+    let offset = 800;
+
+    // Declare styles
     noStroke();
-    fill(140, 210, 235);
+    fill(245, 115, 135); // Dark pink
+    // radialFillGradient(0, 0, 0, 0, 400, 800, color(175, 210, 210), color());
     
+    // Only draw once
     if (animation.frame == 0) {
+      // Draw shape
       beginShape();
+        // Repeat for every angle
         for (let theta = 0; theta < 360; theta += 1) {
           let dx = (radius * cos(theta * 10) + offset) * cos(theta);
           let dy = (radius * cos(theta * 10) + offset) * sin(theta);
@@ -93,14 +121,26 @@ function waves(x, y, animation, pScope) {
 
 // PLANET FUNCTION
 function planet(x, y, animation, pScope) {
-  pScope.fill_background(105, 0, 190);
+  push();
+    // Declare style
+    noStroke();
+    fill(0, 215, 175); // Teal
+
+    // Draw ellipse
+    ellipse(0, 0, 800);
+  pop();
 }
 
 // PEARL FUNCTION
 function pearl(x, y, animation, pScope) {
   push();
-    scale(map(animation.frame, 0, 1, 0.1, 0.75));
+    // Scale from 0.1x to 1x
+    scale(map(animation.frame, 0, 1, 0.1, 1));
+
+    // Rotate from 0 to 360 degrees
     rotate(animation.frame * 360);
+    
+    // Draw image
     pScope.draw_image('pearl', x, y);
   pop();
 }
@@ -108,19 +148,47 @@ function pearl(x, y, animation, pScope) {
 // BUBBLE TEA FUNCTION
 function bubbleTea(x, y, animation, pScope) {
   push();
-    translate(0, -500);
+    // Declare variable
+    let bubbleTeaY = y - map(animation.wave(1), 0, 1, 0, 200);
+
+    // Declare styles
+    translate(0, -525);
     scale(0.6);
-    pScope.draw_image_from_sequence('bubble-tea', x, y - map(animation.wave(1), 0, 1, 0, 200), animation.frame);
+
+    // Draw image sequence
+    pScope.draw_image_from_sequence('bubble-tea', x, bubbleTeaY, animation.frame);
   pop();
 }
 
-// FILL GRADIENT FUNCTION
-function fillGradient(
+// LINEAR FILL GRADIENT FUNCTION
+function linearFillGradient(
   startX, startY,
   endX, endY,
   colorOne, colorTwo) {
+  // Declare variable
   let gradient = drawingContext.createLinearGradient(startX, startY, endX, endY);
+  
+  // Create color stops
   gradient.addColorStop(0, colorOne);
   gradient.addColorStop(1, colorTwo);
+
+  // Draw gradient
+  drawingContext.fillStyle = gradient;
+}
+
+// RADIAL FILL GRADIENT FUNCTION
+function radialFillGradient(
+  startX, startY,
+  endX, endY,
+  startR, endR,
+  colorOne, colorTwo) {
+  // Declare variable
+  let gradient = drawingContext.createRadialGradient(startX, startY, startR, endX, endY, endR);
+
+  // Create color stops
+  gradient.addColorStop(0, colorOne);
+  gradient.addColorStop(1, colorTwo);
+
+  // Draw gradient
   drawingContext.fillStyle = gradient;
 }
