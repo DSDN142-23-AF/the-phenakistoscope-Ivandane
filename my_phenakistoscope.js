@@ -10,7 +10,7 @@ function setup_pScope(pScope) {
   pScope.output_mode(ANIMATED_DISK);
   pScope.scale_for_screen(true);
   pScope.draw_layer_boundaries(false);
-  pScope.set_direction(CW); // Counter-clockwise
+  pScope.set_direction(CCW); // Counter-clockwise
   pScope.set_slice_count(SLICE_COUNT);
 
   // Load images and image sequences
@@ -20,7 +20,6 @@ function setup_pScope(pScope) {
   pScope.load_image('star-three', 'png');
   pScope.load_image('ice-cube', 'png');
   pScope.load_image('waves', 'png');
-  pScope.load_image('pearl', 'png');
 }
 
 function setup_layers(pScope) {
@@ -30,12 +29,17 @@ function setup_layers(pScope) {
   // Stars Layer
   let starsLayer = new PLayer(stars);
   starsLayer.mode(RING);
-  starsLayer.set_boundary(800, 1000);
+  starsLayer.set_boundary(750, 1000);
+
+  // Shooting Star Layer
+  let shootingStarLayer = new PLayer(shootingStar);
+  shootingStarLayer.mode(RING);
+  shootingStarLayer.set_boundary(800, 850);
 
   // Ice Cube Layer
   let iceCubeLayer = new PLayer(iceCube);
   iceCubeLayer.mode(RING);
-  iceCubeLayer.set_boundary(800, 1000);
+  iceCubeLayer.set_boundary(700, 800);
 
   // Planet Layer
   let planetLayer = new PLayer(planet);
@@ -45,12 +49,7 @@ function setup_layers(pScope) {
   // Waves Layer
   let wavesLayer = new PLayer(waves);
   wavesLayer.mode(RING);
-  wavesLayer.set_boundary(0, 800);
-
-  // // Pearl Layer
-  // let pearlLayer = new PLayer(pearl);
-  // pearlLayer.mode(SWIRL(1));
-  // pearlLayer.set_boundary(0, 500);
+  wavesLayer.set_boundary(0, 750);
 
   // Bubble Tea Layer
   let bubbleTeaLayer = new PLayer(bubbleTea);
@@ -80,7 +79,7 @@ function stars(x, y, animation, pScope) {
     if (currentFrame >= 0) {
       bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 150, 0);
     }
-    else if (currentFrame >= 6) {
+    if (currentFrame >= 6) {
       bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 0, 150);
     }
     bgStarAlphas[0] -= bgStarAlphaAmounts[0];
@@ -99,7 +98,7 @@ function stars(x, y, animation, pScope) {
     if (currentFrame >= 6) {
       bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 150, 0);
     }
-    else if (currentFrame >= 6) {
+    if (currentFrame >= 6) {
       bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 0, 150);
     }
     bgStarAlphas[1] -= bgStarAlphaAmounts[1];
@@ -176,7 +175,7 @@ function stars(x, y, animation, pScope) {
     if (currentFrame >= 0) {
       bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 150, 0);
     }
-    else if (currentFrame >= 6) {
+    if (currentFrame >= 6) {
       bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 0, 150);
     }
     bgStarAlphas[0] -= bgStarAlphaAmounts[0];
@@ -195,7 +194,7 @@ function stars(x, y, animation, pScope) {
     if (currentFrame >= 6) {
       bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 150, 0);
     }
-    else if (currentFrame >= 6) {
+    if (currentFrame >= 6) {
       bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 0, 150);
     }
     bgStarAlphas[1] -= bgStarAlphaAmounts[1];
@@ -285,7 +284,7 @@ function stars(x, y, animation, pScope) {
   // Center star
   push();
     // Declare styles
-    translate(0, -925);
+    translate(0, -940);
     scale(centerStarScale);
 
     // Draw image
@@ -313,6 +312,42 @@ function stars(x, y, animation, pScope) {
   pop();
 }
 
+// SHOOTING STAR FUNCTION
+function shootingStar(x, y, animation, pScope) {
+  // Only draw once
+  if (animation.frame == 0) {
+    // Declare style   
+    translate(x, y - 825);
+    drawingContext.shadowBlur = 10;
+    drawingContext.shadowColor = color(255);
+
+    // Tail
+    push();
+      // Declare styles
+      scale(1.2);
+      noStroke();
+      fill(255);
+
+      // Draw tail
+      beginShape();
+        vertex(50, 5);
+        bezierVertex(40, -5, -20, -10, -20, -5);
+        bezierVertex(-30, -5, -30, 5, -20, 0);
+        bezierVertex(-10, 2.5, 10, -5, 50, 5);
+      endShape();
+    pop();
+
+    // Head
+    push();
+      // Declare style
+      scale(0.06);
+
+      // Draw image
+      pScope.draw_image('star-three', -450, -50);
+    pop();
+  }
+}
+
 // ICE CUBE FUNCTION
 function iceCube(x, y, animation, pScope) {
   // Declare variables
@@ -321,8 +356,8 @@ function iceCube(x, y, animation, pScope) {
   let rightIceCubeY = map(animation.wave(1), 0, 1, 100, 0);
 
   // Declare styles
-  translate(0, -820);
-  scale(0.2);
+  translate(x, y - 760);
+  scale(0.175);
 
   // Left ice cube
   push();
@@ -367,7 +402,7 @@ function planet(x, y, animation, pScope) {
   push();
     // Declare style
     noStroke();
-    radialFillGradient(-400, -400, 400, 400, 400, 400, color(145, 210, 200), color(0, 215, 175));
+    radialFillGradient(0, -400, 0, 0, 100, 500, color(120, 240, 230), color(20, 140, 120));
 
     // Only draw once
     if (animation.frame == 0) {
@@ -387,7 +422,7 @@ function planet(x, y, animation, pScope) {
       beginShape();
         vertex(-500, 100);
         vertex(-500, 120);
-        bezierVertex(-200, 120, 200, 130, 500, 150);
+        bezierVertex(-200, 120, 200, 180, 500, 150);
         vertex(500, 100);
         bezierVertex(200, 120, -200, 100, -500, 100);
       endShape();
@@ -398,27 +433,14 @@ function planet(x, y, animation, pScope) {
       // Draw shadow
       fill(0, 50);
       beginShape();
-        vertex(500, -100);
+        vertex(500, 150);
         vertex(500, 500);
         vertex(-500, 500);
-        vertex(-500, 300);
-        bezierVertex(-400, 300, 300, 600, 400, -100);
+        vertex(-500, 150);
+        vertex(-400, 150);
+        bezierVertex(-100, 400, 100, 400, 400, 150);
       endShape();
     }
-  pop();
-}
-
-// PEARL FUNCTION
-function pearl(x, y, animation, pScope) {
-  push();
-    // Scale from 0.1x to 1x
-    scale(map(animation.frame, 0, 1, 0.1, 1));
-
-    // Rotate from 0 to 360 degrees
-    rotate(animation.frame * 360);
-    
-    // Draw image
-    pScope.draw_image('pearl', x, y);
   pop();
 }
 
@@ -426,14 +448,34 @@ function pearl(x, y, animation, pScope) {
 function bubbleTea(x, y, animation, pScope) {
   push();
     // Declare variable
-    let bubbleTeaY = y - map(animation.wave(1), 0, 1, 0, 200);
+    let currentFrame = floor(map(animation.frame, 0, 1, 0, 12));
+    let bubbleTeaY = 0;
+    let shadowSize = 1;
+    
+    // Calculate bubbleTeaY and shadowSize value for each frame
+    if (currentFrame > 3 && currentFrame <= 6) {
+      bubbleTeaY = 2 * map(animation.frame, 0, 1, 0, -200);
+      shadowSize = map(animation.frame, 0, 1, 1, 0.1);
+    }
+    if (currentFrame > 6 && currentFrame < 9) {
+      bubbleTeaY = 2 * map(animation.frame, 0, 1, -200, 0);
+      shadowSize = map(animation.frame, 0, 1, 0.25, 1);
+    }
 
     // Declare styles
-    translate(0, -525);
+    translate(x, y - 525);
     scale(0.6);
+    noStroke();
+    fill(0, 25);
+
+    // Draw shadow
+    push();
+      scale(shadowSize, 1);
+      ellipse(0, 235, 175, 50);
+    pop();
 
     // Draw image sequence
-    pScope.draw_image_from_sequence('bubble-tea', x, bubbleTeaY, animation.frame);
+    pScope.draw_image_from_sequence('bubble-tea', 0, bubbleTeaY, animation.frame);
   pop();
 }
 
