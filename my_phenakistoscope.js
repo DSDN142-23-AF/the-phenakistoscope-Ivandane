@@ -3,18 +3,16 @@ const SLICE_COUNT = 12;
 
 // SETUP PSCOPE FUNCTION
 function setup_pScope(pScope) {
-  // pScope.output_mode(OUTPUT_GIF(1000));
-  // pScope.output_mode(STATIC_FRAME);
-  // pScope.output_mode(ANIMATED_FRAME);
-  // pScope.output_mode(STATIC_DISK);
   pScope.output_mode(ANIMATED_DISK);
   pScope.scale_for_screen(true);
   pScope.draw_layer_boundaries(false);
   pScope.set_direction(CCW); // Counter-clockwise
   pScope.set_slice_count(SLICE_COUNT);
 
-  // Load images and image sequences
+  // Load image sequence
   pScope.load_image_sequence('bubble-tea', 'png', 24);
+
+  // Load images
   pScope.load_image('star-one', 'png');
   pScope.load_image('star-two', 'png');
   pScope.load_image('star-three', 'png');
@@ -22,9 +20,15 @@ function setup_pScope(pScope) {
   pScope.load_image('waves', 'png');
 }
 
+// SETUP LAYERS FUNCTION
 function setup_layers(pScope) {
   // Circle Background
-  new PLayer(null, 45, 50, 110); // Light purple
+  new PLayer(null, 0);
+
+  // Space Layer
+  let spaceLayer = new PLayer(space);
+  spaceLayer.mode(RING);
+  spaceLayer.set_boundary(0, 1000);
 
   // Stars Layer
   let starsLayer = new PLayer(stars);
@@ -57,109 +61,116 @@ function setup_layers(pScope) {
   bubbleTeaLayer.set_boundary(0, 400);
 }
 
+// SPACE FUNCTION
+function space() {
+  // Declare styles
+  noStroke();
+  radialFillGradient(0, 0, 0, 0, 1000, 750, color(21, 24, 54), color(45, 50, 110));
+  
+  // Draw ellipse
+  ellipse(0, 0, 2000);
+}
+
 // STARS FUNCTION
 function stars(x, y, animation, pScope) {
   // Declare arrays
-  let bgStarAlphas = [150, 150, 150, 150, 150];
-  let bgStarAlphaAmounts = [0, 0, 0, 0, 0];
+  let bgStarAlphaAmounts = [
+    map(animation.frame * 2, 0, 1, 0, 150),
+    map(animation.frame, 0, 1, 150, 0),
+    map(animation.frame * 2, 0, 1, 150, 0),
+    map(animation.frame, 0, 1, 0, 150)
+  ];
+  let starsScales = [
+    map(animation.wave(1), 0, 1, 0.25, 0.2),
+    map(animation.wave(1), 0, 1, 0.1, 0.15),
+    map(animation.wave(1), 0, 1, 0.15, 0.1)
+  ];
 
-  // Declare variables
+  // Declare variable
   let currentFrame = floor(map(animation.frame, 0, 1, 0, 12));
-  let centerStarScale = map(animation.wave(1), 0, 1, 0.25, 0.2);
-  let starsScale = map(animation.wave(1), 0, 1, 0.1, 0.15);
 
-  // Background stars
+  // Background Stars
   push();
     // Declare styles
-    translate(-230, -950);
+    translate(x - 180, y - 830);
     rotate(-10);
     scale(0.05);
 
-    // Start on the 1st frame
-    if (currentFrame >= 0) {
-      bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 150, 0);
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[0]);
     }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 0, 150);
+      tint(255, bgStarAlphaAmounts[1]);
     }
-    bgStarAlphas[0] -= bgStarAlphaAmounts[0];
-    tint(255, bgStarAlphas[0]);
     
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(-200, -900);
+    translate(x - 200, y - 900);
     rotate(5);
     scale(0.06);
 
-    // Start on the 6th frame
-    if (currentFrame >= 6) {
-      bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 150, 0);
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[2]);
     }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 0, 150);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    bgStarAlphas[1] -= bgStarAlphaAmounts[1];
-    tint(255, bgStarAlphas[1]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(-160, -940);
+    translate(x - 160, y - 940);
     rotate(-15);
     scale(0.07);
 
-    // Start on the 6th frame
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[2] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[2] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[2] -= bgStarAlphaAmounts[2];
-    tint(255, bgStarAlphas[2]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(-80, -880);
+    translate(x - 80, y - 880);
     rotate(7.5);
     scale(0.08);
-
-    // Start on the 3rd frame
+    
+    // Calculate transparency
+    if (currentFrame < 3) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 3) {
-      bgStarAlphaAmounts[3] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[3] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[3] -= bgStarAlphaAmounts[3];
-    tint(255, bgStarAlphas[3]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(-60, -970);
+    translate(x - 60, y - 970);
     rotate(-2.5);
     scale(0.04);
 
-    // Start on the 9th frame
+    // Calculate transparency
+    if (currentFrame < 9) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 9) {
-      bgStarAlphaAmounts[4] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[4] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[4] -= bgStarAlphaAmounts[4];
-    tint(255, bgStarAlphas[4]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
@@ -167,145 +178,135 @@ function stars(x, y, animation, pScope) {
 
   push();
     // Declare styles
-    translate(230, -950);
+    translate(x + 180, y - 830);
     rotate(10);
     scale(0.05);
 
-    // Start on the 1st frame
-    if (currentFrame >= 0) {
-      bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 150, 0);
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[0]);
     }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[0] = 2 * map(animation.frame, 0, 1, 0, 150);
+      tint(255, bgStarAlphaAmounts[1]);
     }
-    bgStarAlphas[0] -= bgStarAlphaAmounts[0];
-    tint(255, bgStarAlphas[0]);
     
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(200, -900);
+    translate(x + 200, y - 900);
     rotate(-5);
     scale(0.06);
 
-    // Start on the 6th frame
-    if (currentFrame >= 6) {
-      bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 150, 0);
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[2]);
     }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[1] = 2 * map(animation.frame, 0, 1, 0, 150);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    bgStarAlphas[1] -= bgStarAlphaAmounts[1];
-    tint(255, bgStarAlphas[1]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(160, -940);
+    translate(x + 160, y - 940);
     rotate(15);
     scale(0.07);
 
-    // Start on the 6th frame
+    // Calculate transparency
+    if (currentFrame < 6) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 6) {
-      bgStarAlphaAmounts[2] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[2] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[2] -= bgStarAlphaAmounts[2];
-    tint(255, bgStarAlphas[2]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(80, -880);
+    translate(x + 80, y - 880);
     rotate(-7.5);
     scale(0.08);
 
-    // Start on the 3rd frame
+    // Calculate transparency
+    if (currentFrame < 3) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 3) {
-      bgStarAlphaAmounts[3] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[3] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[3] -= bgStarAlphaAmounts[3];
-    tint(255, bgStarAlphas[3]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
   push();
     // Declare styles
-    translate(60, -970);
+    translate(x + 60, y - 970);
     rotate(2.5);
     scale(0.04);
 
-    // Start on the 9th frame
+     // Calculate transparency
+    if (currentFrame < 9) {
+      tint(255, bgStarAlphaAmounts[2]);
+    }
     if (currentFrame >= 9) {
-      bgStarAlphaAmounts[4] = 2 * map(animation.frame, 0, 1, 150, 0);
+      tint(255, bgStarAlphaAmounts[3]);
     }
-    else {
-      bgStarAlphaAmounts[4] = 2 * map(animation.frame, 0, 1, 0, 150);
-    }
-    bgStarAlphas[4] -= bgStarAlphaAmounts[4];
-    tint(255, bgStarAlphas[4]);
 
     // Draw image
     pScope.draw_image('star-three', 0, 0);
   pop();
 
-  // Left star one
+  // Star Left One
   push();
     // Declare styles
-    translate(-100, -940);
-    scale(starsScale);
+    translate(x - 100, y - 940);
+    scale(starsScales[1]);
 
     // Draw image
     pScope.draw_image('star-two', 0, 0);
   pop();
 
-  // Left star two
+  // Star Left Two
   push();
     // Declare styles
-    translate(-150, -880);
-    scale(starsScale);
+    translate(x - 150, y - 880);
+    scale(starsScales[2]);
 
     // Draw image
     pScope.draw_image('star-two', 0, 0);
   pop();
 
-  // Center star
+  // Star Center
   push();
     // Declare styles
-    translate(0, -940);
-    scale(centerStarScale);
+    translate(x, y - 940);
+    scale(starsScales[0]);
 
     // Draw image
     pScope.draw_image('star-one', 0, 0);
   pop();
 
-  // Right star one
+  // Star Right One
   push();
     // Declare styles
-    translate(100, -940);
-    scale(starsScale);
+    translate(x + 100, y - 940);
+    scale(starsScales[2]);
 
     // Draw image
     pScope.draw_image('star-two', 0, 0);
   pop();
 
-  // Right star two
+  // Star Right Two
   push();
     // Declare styles
-    translate(150, -880);
-    scale(starsScale);
+    translate(x + 150, y - 880);
+    scale(starsScales[1]);
 
     // Draw image
     pScope.draw_image('star-two', 0, 0);
@@ -316,10 +317,11 @@ function stars(x, y, animation, pScope) {
 function shootingStar(x, y, animation, pScope) {
   // Only draw once
   if (animation.frame == 0) {
-    // Declare style   
-    translate(x, y - 825);
+    // Declare styles
+    translate(x, y - 835);
     drawingContext.shadowBlur = 10;
     drawingContext.shadowColor = color(255);
+    drawingContext.filter = 'blur(0.75px)';
 
     // Tail
     push();
@@ -350,10 +352,12 @@ function shootingStar(x, y, animation, pScope) {
 
 // ICE CUBE FUNCTION
 function iceCube(x, y, animation, pScope) {
-  // Declare variables
-  let leftIceCubeY = map(animation.wave(1), 0, 1, 0, 100);
-  let centerIceCubeY = map(animation.wave(1), 0, 1, 0, 25);
-  let rightIceCubeY = map(animation.wave(1), 0, 1, 100, 0);
+  // Declare array
+  let iceCubesY = [
+    map(animation.wave(1), 0, 1, 0, 25),
+    map(animation.wave(1), 0, 1, 0, 100),
+    map(animation.wave(1), 0, 1, 100, 0)
+  ];
 
   // Declare styles
   translate(x, y - 760);
@@ -362,8 +366,8 @@ function iceCube(x, y, animation, pScope) {
   // Left ice cube
   push();
     // Declare styles
-    translate(-650, leftIceCubeY + 50);
-    rotate(map(animation.wave(1), 0, 1, -5, 5)); // Rotate between -5 and 5 degrees
+    translate(-650, iceCubesY[1] + 50);
+    rotate(map(animation.wave(1), 0, 1, -5, 5));
     
     // Draw image
     pScope.draw_image('ice-cube', 0, 0);
@@ -372,8 +376,8 @@ function iceCube(x, y, animation, pScope) {
   // Center ice cube
   push();
     // Declare styles
-    translate(0, centerIceCubeY);
-    rotate(map(animation.wave(1), 0, 1, -2.5, 2.5)); // Rotate between -2.5 and 2.5 degrees
+    translate(0, iceCubesY[0]);
+    rotate(map(animation.wave(1), 0, 1, -2.5, 2.5));
     
     // Draw image
     pScope.draw_image('ice-cube', 0, 0);
@@ -382,8 +386,8 @@ function iceCube(x, y, animation, pScope) {
   // Right ice cube
   push();
     // Declare styles
-    translate(650, rightIceCubeY + 50);
-    rotate(map(animation.wave(1), 0, 1, 5, -5)); // Rotate between -5 and 5 degrees
+    translate(650, iceCubesY[2] + 50);
+    rotate(map(animation.wave(1), 0, 1, 5, -5));
     
     // Draw image
     pScope.draw_image('ice-cube', 0, 0);
@@ -392,107 +396,112 @@ function iceCube(x, y, animation, pScope) {
 
 // WAVES FUNCTION
 function waves(x, y, animation, pScope) {
+  // Only draw once
   if (animation.frame == 0) {
-    pScope.draw_image('waves', 0, 0);
+    // Draw image
+    pScope.draw_image('waves', x, y);
   }
 }
 
 // PLANET FUNCTION
-function planet(x, y, animation, pScope) {
-  push();
-    // Declare style
-    noStroke();
-    radialFillGradient(0, -400, 0, 0, 100, 500, color(120, 240, 230), color(20, 140, 120));
+function planet(x, y, animation) {
+  // Declare styles
+  noStroke();
+  radialFillGradient(0, -400, 0, 0, 100, 500, color(120, 240, 230), color(20, 140, 120));
 
-    // Only draw once
-    if (animation.frame == 0) {
-      // Draw planet
-      ellipse(0, 0, 800);
+  // Only draw once
+  if (animation.frame == 0) {
+    // Draw planet
+    ellipse(0, 0, 800);
 
-      // Draw craters
-      fill(255, 255, 255, 100);
-      beginShape();
-        vertex(-500, -100);
-        vertex(-500, 100);
-        bezierVertex(-200, 100, 200, -25, 500, 100);
-        vertex(500, -100);
-        bezierVertex(200, -200, -200, -50, -500, -100);
-      endShape();
+    // Draw craters
+    fill(255, 255, 255, 100);
+    beginShape();
+      vertex(-500, -100);
+      vertex(-500, 100);
+      bezierVertex(-200, 100, 200, -25, 500, 100);
+      vertex(500, -100);
+      bezierVertex(200, -200, -200, -50, -500, -100);
+    endShape();
 
-      beginShape();
-        vertex(-500, 100);
-        vertex(-500, 120);
-        bezierVertex(-200, 120, 200, 180, 500, 150);
-        vertex(500, 100);
-        bezierVertex(200, 120, -200, 100, -500, 100);
-      endShape();
+    beginShape();
+      vertex(-500, 100);
+      vertex(-500, 120);
+      bezierVertex(-200, 250, 200, 120, 500, 150);
+      vertex(500, 100);
+      bezierVertex(200, 120, -200, 100, -500, 100);
+    endShape();
 
-      ellipse(-200, -200, 100, 50);
-      ellipse(-150, -270, 90, 40);
+    ellipse(-200, -200, 100, 50);
+    ellipse(-150, -270, 90, 40);
 
-      // Draw shadow
-      fill(0, 50);
-      beginShape();
-        vertex(500, 150);
-        vertex(500, 500);
-        vertex(-500, 500);
-        vertex(-500, 150);
-        vertex(-400, 150);
-        bezierVertex(-100, 400, 100, 400, 400, 150);
-      endShape();
-    }
-  pop();
+    // Draw shadow
+    fill(30, 125, 110);
+    beginShape();
+      vertex(500, 150);
+      vertex(500, 500);
+      vertex(-500, 500);
+      vertex(-500, 150);
+      vertex(-400, 150);
+      bezierVertex(-100, 400, 100, 400, 400, 150);
+    endShape();
+  }
 }
 
 // BUBBLE TEA FUNCTION
 function bubbleTea(x, y, animation, pScope) {
+  // Declare arrays
+  let bubbleTeaY = [
+    map(animation.frame * 2, 0, 1, 0, -200),
+    map(animation.frame / 2, 0, 1, -200, 0)
+  ];
+  let shadowSize = [
+    map(animation.frame, 0, 1, 1, 0.1),
+    map(animation.frame, 0, 1, 0.25, 1)
+  ];
+
+  // Declare variables
+  let currentFrame = floor(map(animation.frame, 0, 1, 0, 12));
+
+  // Declare styles
+  translate(x, y - 525);
+  scale(0.6);
+
+  // Shadow
   push();
-    // Declare variable
-    let currentFrame = floor(map(animation.frame, 0, 1, 0, 12));
-    let bubbleTeaY = 0;
-    let shadowSize = 1;
-    
-    // Calculate bubbleTeaY and shadowSize value for each frame
+    // Declare styles
+    noStroke();
+    fill(30, 125, 110);
+
+    // Calculate scale
     if (currentFrame > 3 && currentFrame <= 6) {
-      bubbleTeaY = 2 * map(animation.frame, 0, 1, 0, -200);
-      shadowSize = map(animation.frame, 0, 1, 1, 0.1);
+      scale(shadowSize[0], 1);
     }
     if (currentFrame > 6 && currentFrame < 9) {
-      bubbleTeaY = 2 * map(animation.frame, 0, 1, -200, 0);
-      shadowSize = map(animation.frame, 0, 1, 0.25, 1);
+      scale(shadowSize[1], 1);
+    }
+    else {
+      scale(1);
+    }
+    ellipse(0, 235, 175, 50);
+  pop();
+
+  // Bubble Tea
+  push();
+    // Calculate Y values
+    if (currentFrame > 3 && currentFrame <= 6) {
+      translate(0, bubbleTeaY[0]);
+    }
+    if (currentFrame > 6 && currentFrame < 9) {
+      translate(0, bubbleTeaY[1]);
+    }
+    else {
+      translate(0, 0);
     }
 
-    // Declare styles
-    translate(x, y - 525);
-    scale(0.6);
-    noStroke();
-    fill(0, 25);
-
-    // Draw shadow
-    push();
-      scale(shadowSize, 1);
-      ellipse(0, 235, 175, 50);
-    pop();
-
     // Draw image sequence
-    pScope.draw_image_from_sequence('bubble-tea', 0, bubbleTeaY, animation.frame);
+    pScope.draw_image_from_sequence('bubble-tea', 0, 0, animation.frame);
   pop();
-}
-
-// LINEAR FILL GRADIENT FUNCTION
-function linearFillGradient(
-  startX, startY,
-  endX, endY,
-  colorOne, colorTwo) {
-  // Declare variable
-  let gradient = drawingContext.createLinearGradient(startX, startY, endX, endY);
-  
-  // Create color stops
-  gradient.addColorStop(0, colorOne);
-  gradient.addColorStop(1, colorTwo);
-
-  // Draw gradient
-  drawingContext.fillStyle = gradient;
 }
 
 // RADIAL FILL GRADIENT FUNCTION
